@@ -1,0 +1,134 @@
+{
+  "nominal_cycle_s": 140,
+  "measured_complete_cycles": 57,
+  "nonconstant_cycles": 28,
+  "all_observed_cycles_constant": false,
+  "global_windows_match_plan": true,
+  "structural_issues": [],
+  "frame_issues": [],
+  "sequence_issues": [
+    {
+      "intersection_id": "S6",
+      "time_s": 840,
+      "previous": "green",
+      "current": "red"
+    }
+  ],
+  "phase_issues": [
+    {
+      "intersection_id": "S2",
+      "state": "green",
+      "start_s": 700,
+      "duration_s": 28,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S2",
+      "state": "green",
+      "start_s": 835,
+      "duration_s": 26,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S5",
+      "state": "green",
+      "start_s": 420,
+      "duration_s": 10,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S5",
+      "state": "green",
+      "start_s": 519,
+      "duration_s": 59,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S5",
+      "state": "green",
+      "start_s": 667,
+      "duration_s": 59,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S5",
+      "state": "green",
+      "start_s": 815,
+      "duration_s": 59,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S6",
+      "state": "green",
+      "start_s": 393,
+      "duration_s": 47,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S6",
+      "state": "green",
+      "start_s": 524,
+      "duration_s": 47,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S6",
+      "state": "green",
+      "start_s": 655,
+      "duration_s": 49,
+      "reason": "verde_observado_fuera_del_limite_base"
+    },
+    {
+      "intersection_id": "S6",
+      "state": "green",
+      "start_s": 980,
+      "duration_s": 4,
+      "reason": "verde_observado_fuera_del_limite_base"
+    }
+  ],
+  "intersections": [
+    {
+      "intersection_id": "S1",
+      "complete_cycles": 9,
+      "nonconstant_cycles": 4,
+      "min_cycle_s": 140,
+      "max_cycle_s": 146
+    },
+    {
+      "intersection_id": "S2",
+      "complete_cycles": 10,
+      "nonconstant_cycles": 5,
+      "min_cycle_s": 132,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S3",
+      "complete_cycles": 9,
+      "nonconstant_cycles": 4,
+      "min_cycle_s": 140,
+      "max_cycle_s": 148
+    },
+    {
+      "intersection_id": "S4",
+      "complete_cycles": 9,
+      "nonconstant_cycles": 4,
+      "min_cycle_s": 136,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S5",
+      "complete_cycles": 10,
+      "nonconstant_cycles": 5,
+      "min_cycle_s": 49,
+      "max_cycle_s": 148
+    },
+    {
+      "intersection_id": "S6",
+      "complete_cycles": 10,
+      "nonconstant_cycles": 6,
+      "min_cycle_s": 61,
+      "max_cycle_s": 140
+    }
+  ],
+  "definition": "Ciclo observado: tiempo entre dos inicios consecutivos de verde. Los extremos parciales del horizonte no se cuentan como ciclos completos."
+}

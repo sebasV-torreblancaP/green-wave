@@ -1,0 +1,85 @@
+{
+  "project": {
+    "name": "green_wave_6_intersections",
+    "description": "Simulator for a 6-intersection green wave with uphill/downhill plans and a constrained transition."
+  },
+  "corridor": {
+    "direction_up": "S1_to_S6",
+    "direction_down": "S6_to_S1",
+    "speed_up_kmh": 40.0,
+    "speed_down_kmh": 40.0,
+    "up_offsets_mode": "calculated"
+  },
+  "cycle": {
+    "common_cycle_s": 140,
+    "yellow_s": 3,
+    "green_base_s": [
+      60,
+      40,
+      55,
+      53,
+      43,
+      65
+    ]
+  },
+  "intersections": [
+    {
+      "id": "S1",
+      "distance_from_s1_m": 0.0
+    },
+    {
+      "id": "S2",
+      "distance_from_s1_m": 350.0
+    },
+    {
+      "id": "S3",
+      "distance_from_s1_m": 870.0
+    },
+    {
+      "id": "S4",
+      "distance_from_s1_m": 1150.0
+    },
+    {
+      "id": "S5",
+      "distance_from_s1_m": 1760.0
+    },
+    {
+      "id": "S6",
+      "distance_from_s1_m": 2190.0
+    }
+  ],
+  "initial_offsets_s": [
+    0,
+    73,
+    30,
+    78,
+    10,
+    55
+  ],
+  "transition": {
+    "max_green_change_fraction_per_cycle": 0.581396,
+    "max_transition_cycles": 200,
+    "green_step_s": 1,
+    "min_down_band_s": 1,
+    "optimize_target_phase": true,
+    "min_green_s": 1,
+    "max_green_s": 136,
+    "min_red_s": 1
+  },
+  "day": {
+    "date": "2026-10-02",
+    "start": "06:00",
+    "end": "08:00",
+    "initial_wave": "A",
+    "target_wave": "B",
+    "transition_time": "06:16:15",
+    "post_transition_s": 3600
+  },
+  "simulation": {
+    "cycles_up": 3,
+    "cycles_down": 10,
+    "min_duration_s": 3600,
+    "vehicle_start_offset_s": 0,
+    "trajectories_per_cycle": 5
+  }
+}

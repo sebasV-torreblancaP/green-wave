@@ -1,0 +1,16 @@
+Ciclo nominal: 140 s
+Ciclos completos medidos: 252
+Ciclos de duración distinta: 0
+Cambios de color fuera de secuencia: 0
+Fases fuera de duración/mínimos: 0
+
+Intersección | ciclos completos | distintos | mínimo(s) | máximo(s)
+S1 | 42 | 0 | 140 | 140
+S2 | 42 | 0 | 140 | 140
+S3 | 42 | 0 | 140 | 140
+S4 | 42 | 0 | 140 | 140
+S5 | 42 | 0 | 140 | 140
+S6 | 42 | 0 | 140 | 140
+
+Ciclo observado: tiempo entre dos inicios consecutivos de verde. Los extremos parciales del horizonte no se cuentan como ciclos completos.
+La suma de las fases por ventana global no demuestra que los ciclos observados sean constantes.

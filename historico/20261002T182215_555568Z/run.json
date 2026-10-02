@@ -1,0 +1,6 @@
+{
+  "created_at_utc": "20261002T182215_555568Z",
+  "total_time_s": 1400,
+  "interval_convention": "[start_s, end_s): inicio incluido, fin excluido",
+  "states_source": "Cronología común usada para dibujar ambas gráficas; colores contiguos unidos."
+}

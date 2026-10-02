@@ -1,0 +1,64 @@
+{
+  "created_at_utc": "20261002T195726_697779Z",
+  "total_time_s": 7280,
+  "interval_convention": "[start_s, end_s): inicio incluido, fin excluido",
+  "states_source": "Eventos de ciclos locales explícitos.",
+  "frames_source": "Ocupación real de los eventos por ventana global.",
+  "plan": {
+    "model": "fixed_local_cycles_with_green_band",
+    "up_offsets_s": [
+      0,
+      18,
+      45,
+      59,
+      91,
+      113
+    ],
+    "ideal_down_offsets_s": [
+      85,
+      49,
+      136,
+      107,
+      44,
+      0
+    ],
+    "final_offsets_s": [
+      0,
+      18,
+      45,
+      59,
+      91,
+      113
+    ],
+    "final_green_s": [
+      60,
+      40,
+      65,
+      53,
+      68,
+      65
+    ],
+    "transition_cycles": 25,
+    "coordination": {
+      "target_green_s": [
+        60,
+        40,
+        65,
+        53,
+        68,
+        65
+      ],
+      "minimum_fraction": "25/43",
+      "suggested_fraction": 0.581396,
+      "departure_s": 113.0,
+      "departure_exact_s": "113",
+      "windows_s": [
+        [
+          113.0,
+          114.22857142857143
+        ]
+      ],
+      "min_band_s": 1
+    }
+  }
+}

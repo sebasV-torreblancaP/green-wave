@@ -1,0 +1,56 @@
+{
+  "nominal_cycle_s": 140,
+  "measured_complete_cycles": 222,
+  "nonconstant_cycles": 0,
+  "all_observed_cycles_constant": true,
+  "global_windows_match_plan": true,
+  "structural_issues": [],
+  "frame_issues": [],
+  "sequence_issues": [],
+  "phase_issues": [],
+  "intersections": [
+    {
+      "intersection_id": "S1",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S2",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S3",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S4",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S5",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    },
+    {
+      "intersection_id": "S6",
+      "complete_cycles": 37,
+      "nonconstant_cycles": 0,
+      "min_cycle_s": 140,
+      "max_cycle_s": 140
+    }
+  ],
+  "definition": "Ciclo observado: tiempo entre dos inicios consecutivos de verde. Los extremos parciales del horizonte no se cuentan como ciclos completos."
+}

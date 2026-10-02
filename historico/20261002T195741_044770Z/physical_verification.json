@@ -1,0 +1,12 @@
+{
+  "total_time_s": 7280,
+  "controller_cycles": 318,
+  "observed_cycles": 306,
+  "all_cycles_140_s": true,
+  "physical_cycle_s": 140,
+  "sequence_valid": true,
+  "green_limits_valid": true,
+  "down_band_valid": true,
+  "complete_down_vehicles": 22,
+  "ideal_down_offsets_reached": false
+}
