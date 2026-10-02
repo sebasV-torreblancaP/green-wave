@@ -136,11 +136,11 @@ def _day_annotations(ax,day,left,right):
         if request.status == 'SUCCESS':
             if t > start and min(t,right) > max(start,left):
                 ax.axvspan(max(start,left),min(t,right),color='#dcfce7',alpha=.35,zorder=-2)
-                ax.text((max(start,left)+min(t,right))/2,1.01,f'WAVE {active}',
-                        transform=ax.get_xaxis_transform(),ha='center',fontsize=10)
+                ax.text((max(start,left)+min(t,right))/2,.98,f'WAVE {active}',
+                        transform=ax.get_xaxis_transform(),ha='center',va='top',fontsize=10)
             if end > t:
                 ax.axvspan(t,end,color='#c4b5fd',alpha=.35,zorder=-1)
-                ax.text((t+end)/2,1.01,'TRANSICIÓN',transform=ax.get_xaxis_transform(),ha='center',fontsize=10)
+                ax.text((t+end)/2,.98,'TRANSICIÓN',transform=ax.get_xaxis_transform(),ha='center',va='top',fontsize=10)
             active,start = request.to_wave,end
         if left <= t <= right:
             ax.axvline(t,color='#b91c1c' if request.status == 'FAILED' else '#6d28d9',linestyle='--',linewidth=1.6)
@@ -149,11 +149,13 @@ def _day_annotations(ax,day,left,right):
                         ha='left',va='top',fontsize=8,color='#b91c1c' if request.status == 'FAILED' else '#5b21b6')
     if right > max(start,left):
         ax.axvspan(max(start,left),right,color='#dbeafe' if active != day.initial_wave else '#dcfce7',alpha=.35,zorder=-2)
-        ax.text((max(start,left)+right)/2,1.01,f'WAVE {active}',transform=ax.get_xaxis_transform(),ha='center',fontsize=10)
+        ax.text((max(start,left)+right)/2,.98,f'WAVE {active}',transform=ax.get_xaxis_transform(),ha='center',va='top',fontsize=10)
     ax.xaxis.set_major_formatter(FuncFormatter(lambda value,_:day.timestamp(value)[11:19]))
 
 
 def plot_day_timeline(day,save_path='green_wave.png',show=True,zoom=False):
+    if not show:
+        plt.switch_backend('Agg')
     left,right = _day_limits(day,zoom)
     fig,ax = plt.subplots(figsize=(17,7))
     for i,intersection in enumerate(day.intersections):
@@ -184,6 +186,8 @@ def plot_day_timeline(day,save_path='green_wave.png',show=True,zoom=False):
 
 
 def plot_day_transition_metrics(day,save_path='transition.png',show=True):
+    if not show:
+        plt.switch_backend('Agg')
     left,right = _day_limits(day,True)
     fig,axes = plt.subplots(5,1,figsize=(15,13),sharex=True)
     target = day.waves[day.requests[-1].to_wave] if day.requests else day.waves[day.initial_wave]

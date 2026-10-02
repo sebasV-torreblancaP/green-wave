@@ -6,7 +6,7 @@ import unittest
 
 from history import export_history
 from main import load_config
-from simulation import prepare_band_simulation as prepare_simulation
+from green_wave import Intersection,WavePlan,calculate_wave_plan,find_down_green_target,transition_to_target_offsets
 from timeline import build_timeline
 from verify_fixed_cycle import verify_fixed_cycle_history
 
@@ -16,15 +16,22 @@ class PhysicalVerificationTests(unittest.TestCase):
         cfg = copy.deepcopy(load_config())
         cfg['corridor'].update(speed_up_kmh=70,speed_down_kmh=35)
         cfg['simulation']['min_duration_s'] = 7200
-        data = prepare_simulation(cfg)
-        tr = data['transition']
-        frames, states, cycles = build_timeline(data['intersections'],data['cycle'],data['yellow'],
-                                                data['greens'],data['up_plan'],tr,data['cycles_up'],
-                                                data['cycles_down'],return_cycles=True)
-        metadata = dict(up_offsets_s=data['up_plan'].offsets_s,
-                        ideal_down_offsets_s=data['ideal_down_plan'].offsets_s,
+        # Fixture del formato de archivo anterior. No es el algoritmo diario
+        # ni sustituye el objetivo exacto; conserva la capacidad de auditar archivos antiguos.
+        xs = [Intersection(x['id'],x['distance_from_s1_m']) for x in cfg['intersections']]
+        up = calculate_wave_plan(xs,140,70,'up')
+        ideal_down = calculate_wave_plan(xs,140,35,'down')
+        base = cfg['cycle']['green_base_s']
+        coordination = find_down_green_target(xs,up.offsets_s,base,140,3,35)
+        tr = transition_to_target_offsets(up.offsets_s,up.offsets_s,base,140,
+                                           max_change_fraction=.581396,max_cycles=200,yellow_s=3,
+                                           target_green_s=coordination['target_green_s'])
+        cfg['simulation']['cycles_down'] = 24
+        frames, states, cycles = build_timeline(xs,140,3,base,up,tr,3,24,return_cycles=True)
+        metadata = dict(up_offsets_s=up.offsets_s,
+                        ideal_down_offsets_s=ideal_down.offsets_s,
                         final_offsets_s=tr.final_offsets_s,final_green_s=tr.final_green_s,
-                        transition_cycles=tr.cycles_used,coordination=data['coordination'])
+                        transition_cycles=tr.cycles_used,coordination=coordination)
         return export_history(root,cfg,frames,states,controller_cycles=cycles,plan_metadata=metadata)
 
     def test_long_history_proves_cycles_phases_and_down_arrivals(self):

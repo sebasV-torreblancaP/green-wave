@@ -102,6 +102,7 @@ def verify_day_history(run_directory):
     success_ends = []
     statuses = []
     previous_start = -1
+    active_wave = plan['initial_wave']
     for request in summaries:
         t,end = request['transition_start_s'],request['transition_end_s']
         require(0 <= t < plan['requested_duration_s'] and t >= previous_start,'Solicitud fuera del día o desordenada.')
@@ -134,6 +135,7 @@ def verify_day_history(run_directory):
         if request['status'] == 'SUCCESS':
             require(not any(errors) and request['target_achievable'] and request['transition_complete'],
                     'SUCCESS declarado sin alcanzar los offsets objetivo.')
+            require(request['from_wave'] == active_wave,'SUCCESS desde una Wave que no estaba activa.')
             require(all(s['offset_s'] == target_offsets[i] and s['green_s'] == nominal[i]
                         and s['amber_s'] == amber and s['red_s'] == cycle-nominal[i]-amber for i,s in enumerate(final)),
                     'No se restauró exactamente la configuración nominal.')
@@ -145,6 +147,7 @@ def verify_day_history(run_directory):
                             for r in rows if r['intersection_id'] == identity and r['end_s'] > end and r['start_s'] < next_request),
                         'El reparto volvió a modificarse después de completar la transición.')
             success_ends.append(end)
+            active_wave = request['to_wave']
         else:
             require(request['status'] == 'FAILED' and not request['transition_complete']
                     and not request['target_achievable'] and end == t and not request['decisions']
@@ -183,7 +186,19 @@ def verify_day_history(run_directory):
                 and detailed['visible_end_s'] == event['end_s'],'Fases detalladas contradictorias.')
         require(detailed['green_duration'] == raw['green_s'] and detailed['amber_duration'] == raw['yellow_s']
                 and detailed['red_duration'] == raw['red_s'],'Duraciones detalladas incorrectas.')
-        require(detailed['timestamp'] == (origin+timedelta(seconds=detailed['time_s'])).isoformat(timespec='seconds')
+        boundaries = dict(green_start=raw['start_s'],green_end=raw['start_s']+raw['green_s'],
+                          amber_start=raw['start_s']+raw['green_s'],
+                          amber_end=raw['start_s']+raw['green_s']+raw['yellow_s'],
+                          red_start=raw['start_s']+raw['green_s']+raw['yellow_s'],red_end=raw['end_s'])
+        require(all(detailed[key+'_s'] == value and detailed[key] ==
+                    (origin+timedelta(seconds=value)).isoformat()
+                    for key,value in boundaries.items()),'Límites de fase detallados incorrectos.')
+        require(detailed['phase_start_s'] == boundaries[detailed['phase']+'_start']
+                and detailed['phase_end_s'] == boundaries[detailed['phase']+'_end']
+                and detailed['offset'] == raw['start_s'] % cycle
+                and detailed['cycle_id'] == (raw['start_s']-detailed['offset'])//cycle+1,
+                'Origen físico o ciclo_id del histórico detallado incorrecto.')
+        require(detailed['timestamp'] == (origin+timedelta(seconds=detailed['time_s'])).isoformat()
                 and detailed['phase_elapsed_s'] == detailed['time_s']-detailed['phase_start_s'],
                 'Timestamp o tiempo transcurrido de fase incorrecto.')
     audit = audit_history(root)
@@ -196,7 +211,8 @@ def verify_day_history(run_directory):
     last = [max((r for r in rows if r['intersection_id'] == identity),key=lambda r:r['start_s']) for identity in identities]
     proof = dict(total_time_s=total,physical_cycle_s=cycle,amber_s=amber,controller_cycles=len(rows),
                  observed_cycles=len(measured),invalid_physical_cycles=0,sequence_issues=0,
-                 green_limits_valid=True,nominal_restored_after_success=True,
+                 wrong_amber_cycles=0,min_green_violations=0,max_green_violations=0,min_red_violations=0,
+                 green_limits_valid=True,nominal_restored_after_success=True if success_ends else None,
                  final_greens_nominal=all(r['green_s'] == nominal[i] for i,r in enumerate(last)),
                  final_reds_nominal=all(r['red_s'] == cycle-nominal[i]-amber for i,r in enumerate(last)),
                  transition_statuses=statuses,target_offsets_reached=all(s == 'SUCCESS' for s in statuses) if statuses else None,

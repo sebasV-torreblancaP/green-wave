@@ -1,5 +1,9 @@
 # Diagnóstico de la transición con ciclo físico fijo
 
+> El resultado vigente del modelo diario está en [DAY_TRANSITION_RESULT.md](DAY_TRANSITION_RESULT.md).
+> Las variantes por banda descritas aquí son antecedentes; no representan
+> el objetivo exacto ni la restauración nominal de la implementación actual.
+
 ## Restricción matemática
 
 En el modelo actual hay una secuencia G → A → R y un inicio de verde por

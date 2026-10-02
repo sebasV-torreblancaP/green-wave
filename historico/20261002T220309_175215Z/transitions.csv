@@ -1,0 +1,7 @@
+request_id,timestamp,time_s,intersection,cycle_id,phase,phase_elapsed_s,green,amber,red,offset,target_offset,offset_error,green_error,duration_green_delta_s,duration_red_delta_s,offset_requested_correction_s,offset_applied_correction_s,status,reason
+1,2026-10-02T13:37:24,27444,S1,197,green,4,60,3,77,0,57,57,0,0,0,57,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.
+1,2026-10-02T13:37:24,27444,S2,196,red,69,40,3,97,32,26,-6,0,0,0,-6,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.
+1,2026-10-02T13:37:24,27444,S3,196,red,8,55,3,82,78,119,41,0,0,0,41,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.
+1,2026-10-02T13:37:24,27444,S4,196,green,40,53,3,84,104,94,-10,0,0,0,-10,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.
+1,2026-10-02T13:37:24,27444,S5,196,red,80,43,3,94,18,39,21,0,0,0,21,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.
+1,2026-10-02T13:37:24,27444,S6,196,red,19,65,3,72,57,0,-57,0,0,0,-57,0,FAILED,TARGET NOT ACHIEVABLE UNDER CURRENT CONSTRAINTS: t[k+1]=t[k]+C conserva el inicio de verde módulo C; ΔG=-ΔR no mueve ese inicio.

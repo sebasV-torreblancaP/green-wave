@@ -1,0 +1,48 @@
+{
+  "total_time_s": 7280,
+  "physical_cycle_s": 140,
+  "amber_s": 3,
+  "controller_cycles": 318,
+  "observed_cycles": 306,
+  "invalid_physical_cycles": 0,
+  "sequence_issues": 0,
+  "wrong_amber_cycles": 0,
+  "min_green_violations": 0,
+  "max_green_violations": 0,
+  "min_red_violations": 0,
+  "green_limits_valid": true,
+  "nominal_restored_after_success": true,
+  "final_greens_nominal": true,
+  "final_reds_nominal": true,
+  "transition_statuses": [
+    "SUCCESS"
+  ],
+  "target_offsets_reached": true,
+  "nominal_green_s": [
+    60,
+    40,
+    55,
+    53,
+    43,
+    65
+  ],
+  "final_green_s": [
+    60,
+    40,
+    55,
+    53,
+    43,
+    65
+  ],
+  "final_offsets_s": [
+    0,
+    18,
+    45,
+    59,
+    91,
+    113
+  ],
+  "stable_after_success_s": [
+    6002
+  ]
+}

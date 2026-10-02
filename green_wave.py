@@ -32,8 +32,8 @@ class PhaseDurationAdjustment:
     red_delta_s: int
 
     def __post_init__(self):
-        whole_seconds(self.green_delta_s, 'green_delta_s')
-        whole_seconds(self.red_delta_s, 'red_delta_s')
+        object.__setattr__(self,'green_delta_s',whole_seconds(self.green_delta_s,'green_delta_s'))
+        object.__setattr__(self,'red_delta_s',whole_seconds(self.red_delta_s,'red_delta_s'))
         if self.green_delta_s + self.red_delta_s != 0:
             raise ValueError('Cada cambio de verde requiere la compensación opuesta en rojo.')
 

@@ -38,7 +38,7 @@ def validate_config(cfg):
         value = whole_seconds(cfg['transition'].get(key, 1), f'transition.{key}')
         if value <= 0:
             raise ValueError(f'transition.{key} debe ser positivo.')
-    whole_seconds(cfg['simulation']['vehicle_start_offset_s'], 'simulation.vehicle_start_offset_s')
+    whole_seconds(cfg['simulation'].get('vehicle_start_offset_s',0), 'simulation.vehicle_start_offset_s')
     duration = whole_seconds(cfg['simulation'].get('min_duration_s', 0), 'simulation.min_duration_s')
     if duration < 0:
         raise ValueError('simulation.min_duration_s debe ser no negativo.')
@@ -64,7 +64,7 @@ def validate_config(cfg):
         if maximum < min_green or g > maximum:
             raise ValueError('El verde nominal debe respetar max_green_s.')
     numeric = [cycle, yellow, fraction, min_green, min_red, *distances, *greens,
-               *cfg['initial_offsets_s'], cfg['simulation']['vehicle_start_offset_s'],
+               *cfg['initial_offsets_s'], cfg['simulation'].get('vehicle_start_offset_s',0),
                cfg['corridor']['speed_up_kmh'], cfg['corridor']['speed_down_kmh']]
     if not all(math.isfinite(float(v)) for v in numeric):
         raise ValueError('Las entradas numéricas deben ser finitas.')
@@ -74,6 +74,8 @@ def validate_config(cfg):
         if cfg['corridor'][key] <= 0:
             raise ValueError(f'{key} debe ser mayor que cero.')
     for key in ('cycles_up', 'cycles_down', 'trajectories_per_cycle'):
+        if key in ('cycles_up','cycles_down') and key not in cfg['simulation']:
+            continue
         value = cfg['simulation'].get(key, 5 if key == 'trajectories_per_cycle' else 0)
         if isinstance(value, bool) or not isinstance(value, int) or value < 1:
             raise ValueError(f'{key} debe ser un entero positivo.')
@@ -112,7 +114,8 @@ def main():
         print(f'{request.status}: {request.reason}')
         print(f'Duración: {request.transition_duration_s} s; ciclos de ajuste: {request.transition_cycles}.')
         for s in request.initial_state:
-            print(f"{s['intersection_id']}: {s['phase']}, {s['phase_elapsed_s']} s desde el inicio de fase.")
+            phase_label = {'green':'VERDE','yellow':'ÁMBAR','red':'ROJO'}[s['phase']]
+            print(f"{s['intersection_id']}: {phase_label}, {s['phase_elapsed_s']} s desde el inicio de fase.")
     run_dir,audit = day.export(ROOT/'historico')
     print_audit(run_dir, audit)
     from verify_fixed_cycle import verify_fixed_cycle_history

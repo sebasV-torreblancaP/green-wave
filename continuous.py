@@ -1,6 +1,7 @@
 """Conversión de ciclos locales explícitos a eventos, sin recortes por rejilla."""
 from dataclasses import dataclass
 from bisect import bisect_right
+import math
 
 from green_wave import whole_seconds
 
@@ -29,9 +30,17 @@ class LocalCycle:
         return self.green_s + self.yellow_s + self.red_s
 
 
+def clock_seconds(value):
+    """Instante de consulta; las duraciones de control siguen siendo enteras."""
+    if isinstance(value,bool) or not math.isfinite(float(value)):
+        raise ValueError('El instante debe ser un número finito de segundos.')
+    number = float(value)
+    return int(number) if number.is_integer() else number
+
+
 def controller_state_at(cycles, time_s):
     """Estado real [inicio,fin), usando el origen físico incluso si es negativo."""
-    time_s = whole_seconds(time_s, 'time_s')
+    time_s = clock_seconds(time_s)
     states = []
     for identity in dict.fromkeys(c.intersection_id for c in cycles):
         own = sorted((c for c in cycles if c.intersection_id == identity), key=lambda c:c.start_s)

@@ -9,7 +9,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, time, timedelta
 import math
 
-from continuous import LocalCycle, controller_state_at, cycle_events
+from continuous import LocalCycle, clock_seconds, controller_state_at, cycle_events
 from green_wave import (Intersection, WavePlan, assess_phase_offset, calculate_wave_plan,
                         choose_nominal_green, whole_seconds)
 from timeline import frames_from_events
@@ -39,8 +39,8 @@ def build_waves(cfg, intersections):
 
 @dataclass
 class DayTransition:
-    transition_start_s: int
-    transition_end_s: int
+    transition_start_s: float
+    transition_end_s: float
     from_wave: str
     to_wave: str
     status: str
@@ -79,7 +79,9 @@ class DaySimulation:
         self.nominal_green_s = tuple(whole_seconds(g,'green_nominal') for g in cfg['cycle']['green_base_s'])
         self.nominal_red_s = tuple(self.cycle_s-g-self.amber_s for g in self.nominal_green_s)
         self.intersections = [Intersection(x['id'],float(x['distance_from_s1_m'])) for x in cfg['intersections']]
-        if len(self.intersections) != len(self.nominal_green_s) or len({x.id for x in self.intersections}) != len(self.intersections):
+        if (len(self.intersections) < 2 or len(self.intersections) != len(self.nominal_green_s)
+                or len({x.id for x in self.intersections}) != len(self.intersections)
+                or any(not isinstance(x.id,str) or not x.id for x in self.intersections)):
             raise ValueError('IDs únicos y un verde nominal por intersección.')
         self.waves = build_waves(self.config,self.intersections)
         if wave not in self.waves:
@@ -90,8 +92,11 @@ class DaySimulation:
         self.requested_end_datetime = datetime.combine(self.start_datetime.date(),time.fromisoformat(end))
         if self.requested_end_datetime <= self.start_datetime:
             self.requested_end_datetime += timedelta(days=1)
-        self.requested_duration_s = int((self.requested_end_datetime-self.start_datetime).total_seconds())
+        self.requested_duration_s = clock_seconds((self.requested_end_datetime-self.start_datetime).total_seconds())
         minimum = whole_seconds(cfg.get('simulation',{}).get('min_duration_s',0),'min_duration_s')
+        maximum_cycles = whole_seconds(cfg['transition']['max_transition_cycles'],'max_transition_cycles')
+        if minimum < 0 or maximum_cycles < 1:
+            raise ValueError('Horizonte mínimo no negativo y máximo de ciclos positivo.')
         self.total_s = math.ceil(max(self.requested_duration_s,minimum)/self.cycle_s)*self.cycle_s
         self.requests = []
         # La Wave A de todo el día se genera antes de calcular una transición.
@@ -99,6 +104,8 @@ class DaySimulation:
         self.cycles = nominal if controller_cycles is None else list(controller_cycles)
         self.initial_state_source = 'nominal_wave' if controller_cycles is None else 'controller_history'
         self._validate_cycles(self.cycles,self.total_s)
+        self.cycles = [c for intersection in self.intersections
+                       for c in sorted((c for c in self.cycles if c.intersection_id == intersection.id),key=lambda c:c.start_s)]
         self.baseline_cycles = list(self.cycles)
         self.baseline_states = cycle_events(self.baseline_cycles,self.total_s,self.cycle_s)
         self._refresh()
@@ -132,11 +139,11 @@ class DaySimulation:
         return [LocalCycle(inter.id,offset+k*self.cycle_s,self.nominal_green_s[i],
                            self.amber_s,self.nominal_red_s[i],f'wave_{self.initial_wave}')
                 for i,(inter,offset) in enumerate(zip(self.intersections,self.waves[self.initial_wave].offsets_s))
-                for k in range(-1,count)]
+                for k in range(-1 if offset else 0,count)]
 
     def seconds(self, value):
         if isinstance(value,(int,float)) and not isinstance(value,bool):
-            return whole_seconds(value,'time_s')
+            return clock_seconds(value)
         if isinstance(value,datetime):
             moment = value
         elif 'T' in str(value):
@@ -145,10 +152,10 @@ class DaySimulation:
             moment = datetime.combine(self.start_datetime.date(),time.fromisoformat(str(value)))
             if moment < self.start_datetime:
                 moment += timedelta(days=1)
-        return int((moment-self.start_datetime).total_seconds())
+        return clock_seconds((moment-self.start_datetime).total_seconds())
 
     def timestamp(self, seconds):
-        return (self.start_datetime+timedelta(seconds=seconds)).isoformat(timespec='seconds')
+        return (self.start_datetime+timedelta(seconds=seconds)).isoformat()
 
     def active_wave_at(self, value):
         t = self.seconds(value)
@@ -236,15 +243,17 @@ class DaySimulation:
                             raise ValueError('MAX_TRANSITION_CYCLES: la restauración necesita más ciclos permitidos.')
                         selected, adjustment = choose_nominal_green(current,self.nominal_green_s[i],
                                                                      self.cycle_s,self.amber_s,**self._limit_arguments(i))
+                        local_correction = asdict(assess_phase_offset(next_start % self.cycle_s,
+                                                                     target_plan.offsets_s[i],self.cycle_s))
                         decisions.append(dict(intersection_id=intersection.id,time_s=next_start,
                                               green_before_s=current,green_s=selected,amber_s=self.amber_s,
                                               red_s=self.cycle_s-selected-self.amber_s,
                                               offset_s=s['offset_s'],target_offset_s=target_plan.offsets_s[i],
-                                              offset_error_s=corrections[i]['requested_s'],
+                                              offset_error_s=local_correction['requested_s'],
                                               green_error_before_s=self.nominal_green_s[i]-current,
                                               green_error_s=self.nominal_green_s[i]-selected,
                                               phase_duration_adjustment=asdict(adjustment),
-                                              phase_offset_correction=corrections[i]))
+                                              phase_offset_correction=local_correction))
                         current = selected
                         count += 1
                         restored = next_start
@@ -298,6 +307,7 @@ class DaySimulation:
 
     def metadata(self):
         return dict(model='day_fixed_physical_cycles',simulation_start=self.start_datetime.isoformat(),
+                    validation_case=self.config.get('day',{}).get('validation_case'),
                     requested_end=self.requested_end_datetime.isoformat(),
                     simulated_end=self.timestamp(self.total_s),requested_duration_s=self.requested_duration_s,
                     audit_horizon_extension_s=self.total_s-self.requested_duration_s,

@@ -264,23 +264,22 @@ def export_day_history(root, simulation):
 def query_history_state(run_directory, moment):
     """Consulta el CSV físico, no deduce estados desde ventanas globales."""
     from datetime import timedelta, time
-    from continuous import LocalCycle,controller_state_at
+    from continuous import LocalCycle,clock_seconds,controller_state_at
     run = Path(run_directory)
     metadata = json.loads((run/'run.json').read_text(encoding='utf-8'))
     start = datetime.fromisoformat(metadata['plan']['simulation_start'])
     if isinstance(moment,(int,float)) and not isinstance(moment,bool):
-        from green_wave import whole_seconds
-        elapsed = whole_seconds(moment,'time_s')
+        elapsed = clock_seconds(moment)
     else:
         stamp = datetime.fromisoformat(moment) if 'T' in moment else datetime.combine(start.date(),time.fromisoformat(moment))
         if stamp < start and 'T' not in moment:
             stamp += timedelta(days=1)
-        elapsed = int((stamp-start).total_seconds())
+        elapsed = clock_seconds((stamp-start).total_seconds())
     if not 0 <= elapsed < metadata['total_time_s']:
         raise ValueError('Consulta fuera del horizonte del histórico.')
     rows = read_csv(run/'controller_cycles.csv',('start_s','green_s','yellow_s','red_s','end_s','duration_s'))
     cycles = [LocalCycle(r['intersection_id'],r['start_s'],r['green_s'],r['yellow_s'],r['red_s'],r['stage']) for r in rows]
-    return [dict(s,timestamp=(start+timedelta(seconds=elapsed)).isoformat(timespec='seconds'))
+    return [dict(s,timestamp=(start+timedelta(seconds=elapsed)).isoformat())
             for s in controller_state_at(cycles,elapsed)]
 
 

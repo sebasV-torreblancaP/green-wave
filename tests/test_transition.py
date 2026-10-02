@@ -5,7 +5,7 @@ from fractions import Fraction
 from green_wave import (Intersection, calculate_wave_plan, transition_to_target_offsets,
                         find_down_green_target)
 from main import load_config, validate_config
-from simulation import prepare_band_simulation as prepare_simulation
+from simulation import prepare_simulation
 from timeline import build_timeline
 from visualization import green_departure_windows
 
@@ -92,23 +92,27 @@ class FixedCycleTransitionTests(unittest.TestCase):
         cfg = copy.deepcopy(load_config())
         cfg['corridor'].update(speed_up_kmh=70,speed_down_kmh=35)
         cfg['transition']['max_green_change_fraction_per_cycle'] = .2
-        with self.assertRaisesRegex(ValueError, '25/43'):
-            prepare_simulation(cfg)
+        day = prepare_simulation(cfg)
+        self.assertEqual(day.requests[0].status,'FAILED')
+        self.assertIn('TARGET NOT ACHIEVABLE',day.requests[0].reason)
+        self.assertEqual(day.cycles,day.baseline_cycles)
 
     def test_ramp_needs_twenty_five_cycles_and_extends_horizon(self):
         cfg = copy.deepcopy(load_config())
         cfg['corridor'].update(speed_up_kmh=70,speed_down_kmh=35)
-        cfg['transition']['max_transition_cycles'] = 20
         with self.assertRaisesRegex(ValueError, '25 ciclos'):
-            prepare_simulation(cfg)
-        cfg['transition']['max_transition_cycles'] = 200
+            transition_to_target_offsets([0],[0],[43],140,target_green_s=[68],
+                                          max_change_fraction=.581396,max_cycles=20,yellow_s=3)
+        ramp = transition_to_target_offsets([0],[0],[43],140,target_green_s=[68],
+                                            max_change_fraction=.581396,max_cycles=200,yellow_s=3)
+        self.assertEqual(ramp.cycles_used,25)
+        self.assertEqual(ramp.green_history[0][0],44)
+        self.assertEqual(ramp.green_history[-1][0],68)
         cfg['simulation']['min_duration_s'] = 7200
+        cfg['day'].update(start='06:00',end='06:30',transition_time='06:15')
         result = prepare_simulation(cfg)
-        self.assertEqual(result['transition'].cycles_used, 25)
-        self.assertEqual(result['transition'].green_history[0][-2], 44)
-        self.assertEqual(result['transition'].green_history[-1][-2], 68)
-        self.assertGreaterEqual((result['cycles_up']+25+result['cycles_down'])*140, 7200)
-        self.assertGreaterEqual(result['cycles_down'], 10)
+        self.assertGreaterEqual(result.total_s,7200)
+        self.assertEqual(result.nominal_green_s,tuple(cfg['cycle']['green_base_s']))
 
     def test_band_crossing_zero_is_not_lost(self):
         # Un verde común [100,150) tiene banda continua de 50 s aunque la
