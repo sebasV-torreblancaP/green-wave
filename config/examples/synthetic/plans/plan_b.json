@@ -1,0 +1,7 @@
+{
+  "name": "B",
+  "entries": {
+    "I1": {"green_s": 50}, "I2": {"green_s": 50}, "I3": {"green_s": 60},
+    "I4": {"green_s": 40}, "I5": {"green_s": 35}, "I6": {"green_s": 65}
+  }
+}

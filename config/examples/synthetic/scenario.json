@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "synthetic-six-intersections",
+  "h_inicio_s": 14,
+  "intersection_files": [
+    "intersections/I1.json", "intersections/I2.json", "intersections/I3.json",
+    "intersections/I4.json", "intersections/I5.json", "intersections/I6.json"
+  ],
+  "controller_profiles_file": "controller_profiles.json",
+  "plan_a_file": "plans/plan_a.json",
+  "plan_b_file": "plans/plan_b.json",
+  "transition_file": "transition.json"
+}

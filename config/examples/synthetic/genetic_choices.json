@@ -1,0 +1,7 @@
+{
+  "parent_strategy": "mean",
+  "mutation_probability": 0.5,
+  "mutation_amplitude_s": 5,
+  "current_in_every_generation": true,
+  "seed": 12345
+}

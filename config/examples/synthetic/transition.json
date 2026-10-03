@@ -1,0 +1,11 @@
+{
+  "candidates_per_intersection": 15,
+  "max_green_change_percent": 20,
+  "max_generations": 100,
+  "stagnation_generations": 10,
+  "elite_count": 5,
+  "state_weight": 0.5,
+  "boundary_weight": 0.5,
+  "target_fitness": 1.0,
+  "max_transition_cycles": 20
+}

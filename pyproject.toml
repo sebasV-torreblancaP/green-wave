@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "green-wave-transition"
+version = "0.1.0"
+description = "Model and validation tools for progressive traffic-signal transitions"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+green-wave = "green_wave.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
